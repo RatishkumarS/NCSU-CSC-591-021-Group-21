@@ -30,3 +30,9 @@ class NUM:
             return 0
         else:
             return math.pow((self.m2 / (self.n - 1)), 0.5)
+
+    def like(self, x, num, denom):
+        mu, sd = self.mid(), self.div() + 1e-30
+        num = math.exp(-0.5 * ((x - mu) ** 2) / (sd**2))
+        denom = sd * 2.5 + 1e-30
+        return num / denom

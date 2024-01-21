@@ -9,6 +9,7 @@ class SYM:
         self.has = {}
         self.mode = None
         self.most = 0
+        self.m = 1
 
     def add(self, x):
         if x != "?":
@@ -26,3 +27,10 @@ class SYM:
         for v in self.has.values():
             e += -v / self.n * math.log2(v / self.n)
         return e
+
+    def like(self, x, prior):
+        str_x = str(x)
+        if self.has[str_x]:
+            return (int(self.has[str_x]) + self.m * prior) / (self.n + self.m)
+        else:
+            return (self.m * prior) / (self.n + self.m)
