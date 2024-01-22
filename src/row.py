@@ -1,4 +1,5 @@
 import math
+from helpers import coerce
 
 
 class ROW:
@@ -7,7 +8,7 @@ class ROW:
         self.k = 1
 
     def likes(self, datas):
-        n, nHypotheses = 0
+        n, nHypotheses = 0, 0
         most, out = None, 0
         for k, data in enumerate(datas):
             n = n + len(data)
@@ -21,10 +22,11 @@ class ROW:
     def like(self, data, n, nHypotheses):
         prior = (len(data) + self.k) / (n + self.k * nHypotheses)
         out = math.log(prior)
-        for col in cols:
-            v = self.cells[col]
+        for _, col in data.cols.x.items():
+            v = self.cells[col.at-1]
+            v = coerce(v)
             if v != "?":
                 inc = col.like(v, prior)
-                out += math.log(inc)
+                out += math.log2(inc)
 
         return math.exp(1) ** out

@@ -3,8 +3,8 @@ import re,sys,copy,random
 from config import *
 
 def settings(help):
-    regex = "[-][-]([\S]+)[^=]+= ([\S]+)"
-    res = re.findall(regex, help)
+    # regex = "[-][-]([\S]+)[^=]+= ([\S]+)"
+    res = re.findall(r'-(\w+)\s+--(\w+)\s+.*=\s*(\S+)', help)
     return dict(res)
 
 def eg():

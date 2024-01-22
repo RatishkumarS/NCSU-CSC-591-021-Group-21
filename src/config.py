@@ -1,8 +1,8 @@
-the = {"seed": 31210, "file": "../Data/auto93.csv"}
+the = {"seed": 31210, "file": "../auto93.csv"}
 b4 = {}
 egs = {}
 
-help = """USAGE:   python main.py [OPTIONS] [-g ACTION]
+"""USAGE:   python main.py [OPTIONS] [-g ACTION]
     OPTIONS:
     -c --cohen    small effect size               = .35
     -f --file     csv data file name              = ../data/diabetes.csv
@@ -11,4 +11,6 @@ help = """USAGE:   python main.py [OPTIONS] [-g ACTION]
     -m --m        low attribute frequency kludge  = 2
     -s --seed     random number seed              = 31210
     -t --todo     start up action                 = help
-    """
+"""
+
+option_str = __doc__

@@ -5,10 +5,10 @@ from cols import COLS
 
 
 class DATA:
-    def __init__(self, src,fun=None):
+    def __init__(self, src, fun=None):
         self.rows = []
         self.cols = None
-        self.adds(src,fun)
+        self.adds(src, fun)
 
     def add(self,t):
         if self.cols:
