@@ -11,7 +11,7 @@ def learn(data, row, my):
         print(data.cols.names)
         if kl not in my["datas"]:  
             my['datas'][kl] = DATA(data.cols.names)
-            my['datas'][kl].add(row.cells, None)
+        my['datas'][kl].add(row.cells, None)
 
 
 def bayes(file):
@@ -19,3 +19,5 @@ def bayes(file):
         llearn = lambda data, t: learn(data, t, wme)
         DATA(file, llearn)
         print("Accuracy :", (wme['acc']/wme['tries'])*100)
+
+bayes("diabetes.csv")
