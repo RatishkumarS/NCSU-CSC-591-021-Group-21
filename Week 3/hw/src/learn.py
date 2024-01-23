@@ -14,10 +14,8 @@ def learn(data, row, my):
             my['datas'][kl].add(row.cells, None)
 
 
-def bayes():
+def bayes(file):
         wme = {'acc': 0, 'datas': {}, 'tries': 0, 'n': 0}
         llearn = lambda data, t: learn(data, t, wme)
-        DATA("diabetes.csv", llearn)
+        DATA(file, llearn)
         print("Accuracy :", (wme['acc']/wme['tries'])*100)
-
-bayes()
