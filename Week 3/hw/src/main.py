@@ -10,6 +10,7 @@ def cli():
         print(temp.gethelp())
     elif args[0] == '--file' or args[0]=="-f":
         file = str(args[1])
+        bayes(file)
         dataobj = DATA(file)
         if args[2] == "--test" or args[2]=="-t":
             if args[3] == "sym":
