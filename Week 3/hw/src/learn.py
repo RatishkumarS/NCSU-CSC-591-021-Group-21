@@ -20,4 +20,3 @@ def bayes(file):
         DATA(file, llearn)
         print("Accuracy :", (wme['acc']/wme['tries'])*100)
 
-bayes("diabetes.csv")
