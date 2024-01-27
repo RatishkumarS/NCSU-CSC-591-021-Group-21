@@ -13,7 +13,7 @@ class CONFIG:
             -s --seed     random number seed              = 31210
             -t --todo     start up action                 = help
             """
-    def the_setter(self,att,value):
+    def setthe(self,att,value):
         if att=="seed":
             self.the[att] = int(value)
         elif att=="cohen":
