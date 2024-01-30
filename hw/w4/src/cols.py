@@ -3,9 +3,13 @@ from sym import SYM
 
 class COLS:
     # Create
-    def __init__(self, row):
+    def __init__(self, row,heaven,norm,at):
         x, y, all_cols = {}, {}, []
         klass, col = None, None
+        self.heaven = heaven
+        self.norm = norm
+        self.at = at
+
 
         for at, txt in enumerate(row):
             col = (SYM if txt.startswith("A-Z") else NUM)(txt, at)

@@ -67,3 +67,15 @@ class DATA:
             item = dark.pop(todo)
             lite.append(item)
         return stats,bests
+    
+    def best_rest(data, want):
+        data.rows.sort(key=lambda row: row.d2h())
+        best, rest = [data.cols.names], [data.cols.names]
+        
+        for i, row in enumerate(data.rows, 1):
+            if i <= want:
+                best.append(row)
+            else:
+                rest.append(row)
+
+        return DATA(best), DATA(rest)
