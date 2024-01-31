@@ -13,8 +13,8 @@ class DATA:
                 for row in csv_reader:
                     self.add(row,fun)
 
-    def add(self,t,fun,row=None):
-        if isinstance(t,ROW):
+    def add(self, t, fun=None, row=None):
+        if isinstance(t, ROW):
             row = t.cells
         else:
             row = ROW(t)
@@ -79,3 +79,22 @@ class DATA:
                 rest.append(row)
 
         return DATA(best), DATA(rest)
+
+    def split(self, best, rest, lite, dark):
+        selected = DATA(self.cols.names)
+        max_val = 1E30
+        out = 1
+
+        for i, row in enumerate(dark):
+            b = row.like(best, len(lite), 2)
+            r = row.like(rest, len(lite), 2)
+
+            if b > r:
+                selected.add(row)
+
+            tmp = abs(b + r) / abs(b - r + 1E-300)
+
+            if tmp > max_val:
+                out, max_val = i, tmp
+
+        return out, selected
