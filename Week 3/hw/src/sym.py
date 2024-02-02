@@ -1,4 +1,5 @@
 import math
+from constants import *
 
 # Symbols
 class SYM:
@@ -10,7 +11,7 @@ class SYM:
         self.has = {}
         self.mode = None
         self.most = 0
-        self.m = 1
+
 
     # Update
     def add(self, x):
@@ -33,7 +34,11 @@ class SYM:
         return 0
     
     def like(self, x, prior):
-        return ((self.has.get(x, 0) or 0) + self.m * prior) / (self.n + self.m)
+        h = self.has[x] if x in self.has else 0
+        if self.n==0 and the['m']==0:
+            return 0
+        else:
+            return (h + the['m'] * prior) / (self.n + the['m'])
 
 # Example usage:
 # sym_instance = SYM("example")
@@ -41,4 +46,3 @@ class SYM:
 # print(sym_instance.mid())
 # print(sym_instance.div())
 # print(sym_instance.small())
-
