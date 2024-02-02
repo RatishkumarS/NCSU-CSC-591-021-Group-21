@@ -1,3 +1,2 @@
-Task-03
-
-Accuracy for diabetes.csv: 73.35092348284961
+file                 k          m          Accuracy  
+diabetes.csv         1          2          73.35%    
