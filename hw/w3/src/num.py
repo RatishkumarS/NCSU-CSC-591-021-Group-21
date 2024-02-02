@@ -36,10 +36,7 @@ class NUM:
 
     def like(self, x, _):
         mu, sd = self.mid(), (self.div() + 1E-30)
-        try:
-            x_float = float(x)
-        except ValueError:
-            return 0.0
-        nom = math.exp(-0.5 * ((float(x) - mu) ** 2) / (sd ** 2))
+        nom = math.exp(-0.5 * ((x - mu) ** 2) / (sd ** 2))
         denom = (sd * 2.5 + 1E-30)
+        print(nom/denom)
         return nom / denom

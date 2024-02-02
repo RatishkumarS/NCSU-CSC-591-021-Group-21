@@ -1,4 +1,5 @@
 from num import NUM
+import re
 from sym import SYM
 
 class COLS:
@@ -8,7 +9,11 @@ class COLS:
         klass, col = None, None
 
         for at, txt in enumerate(row):
-            col = (SYM if txt.startswith("A-Z") else NUM)(txt, at)
+            col = None
+            if re.search("^[A-Z]", txt):
+                col =NUM(txt, at) 
+            else: 
+                col = SYM(txt, at) 
             all_cols.append(col)
 
             if not txt.endswith("X"):

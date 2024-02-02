@@ -1,27 +1,24 @@
 import math
+from constants import *
 
 class ROW:
     def __init__(self, t):
         self.cells = t
-        self.k = 1
+        # self.k = constants.the['k']
 
     @classmethod
     def new(cls, t):
         return cls(t)
     
     def like(self, data, n, nHypotheses):
-        prior = (len(data.row) + self.k) / (n + self.k * nHypotheses)
-        out = math.log(prior)
-
+        prior = (len(data.row) + the['k']) / (n + the['k']*nHypotheses)
+        out = math.log(prior) if prior!=0 else float("-inf")
         for col in data.cols.x.values():
             v = self.cells[col.at]
             if v != "?":
-                inc = col.like(v, prior)
-                if inc > 0:
-                    out += math.log2(inc)
-
-        return math.exp(1) ** out
-
+                inc = col.like(v,prior)
+                out = out + (math.log(inc) if inc != 0 else float("-inf"))
+        return math.exp(1)**out
     def likes(self, datas):
         n, nHypotheses = 0, 0
         most, out = None, None
