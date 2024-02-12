@@ -3,15 +3,16 @@ from row import ROW
 from cols import COLS
 import random
 
+
 class DATA:
     def __init__(self, src, fun=None):
         self.row = []
         self.cols = None
-        if isinstance(src,str):
+        if isinstance(src, str):
             with open(src, 'r') as csvfile:
                 csv_reader = csv.reader(csvfile)
                 for row in csv_reader:
-                    self.add(row,fun)
+                    self.add(row, fun)
 
     def add(self, t, fun=None, row=None):
         if isinstance(t, ROW):
@@ -26,7 +27,7 @@ class DATA:
         else:
             self.cols = COLS(t)
 
-    def mid(self,cols,u):
+    def mid(self, cols, u):
         u = []
         for col in (self.cols or self.cols.all):
             u.append(col.mid())
@@ -50,34 +51,65 @@ class DATA:
             if i in ['Lbs-','Acc+','Mpg+']:
                 u[i] = round(j.mid(),2)
         return u
-    
-    
-    
-    def gate(self, budget0, budget, some):
-        rows, lite, dark = None, None, None
-        stats, bests = {}, {}
-        rows = random.shuffle(self.row)
-        lite = rows[1:budget0]
-        dark = rows[budget0+1:]
-        for i in range(1, budget + 1):
-            best, rest = self.bestRest(lite, len(lite) ** some)
-            todo, selected = self.split(best, rest, lite, dark)
-            stats[i] = selected.mid()
-            bests[i] = best.rows[0]
-            item = dark.pop(todo)
-            lite.append(item)
-        return stats,bests
-    
-    def best_rest(data, want):
-        data.rows.sort(key=lambda row: row.d2h())
-        best, rest = [data.cols.names], [data.cols.names]
-        
-        for i, row in enumerate(data.rows, 1):
-            if i <= want:
+
+    def gate(self, random_seed, budget0=4, budget=10, some=0.5):
+        random.seed(random_seed)
+        list_1, list_2, list_3, list_4, list_5, list_6 = [], [], [], [], [], []
+
+        # shuffling the rows
+        rows = random.sample(self.row, len(self.row))
+
+        list_1.append(f"1. top6: {[r.cells[len(r.cells) - 3:] for r in rows[:6]]}")
+        list_2.append(f"2. top50:{[[r.cells[len(r.cells) - 3:] for r in rows[:50]]]}")
+
+        # sorting rows based on d2h
+        rows.sort(key=lambda r: r.d2h(self))
+        list_3.append(f"3. most: {rows[0].cells[len(rows[0].cells) - 3:]}")
+
+        # shuffling rows again
+        rows = random.sample(self.row, len(self.row))
+
+        # train and test
+        lite = rows[:budget0]  # train-data
+        dark = rows[budget0:]  # test-data
+
+        stats, bests = [], []
+
+        for i in range(budget):
+            best, rest = self.best_rest(lite, len(lite) ** some)
+            print(best.stats(), rest.stats())
+            todo, selected, max_value = self.split(best, rest, lite, dark)
+
+            selected_rows_rand = random.sample(dark, budget0 + i)
+            y_values_rand = []
+            for row in selected_rows_rand:
+                y_val = list(map(coerce, row.cells[-3:]))
+                y_values_rand.append(y_val)
+
+            list_4.append(f"4: rand:{np.mean(np.array(y_values_rand), axis=0)}")
+            list_5.append(f"5: mid: {selected.mid().cells[len(selected.mid().cells) - 3:]}")
+            list_6.append(f"6: top: {best.rows[0].cells[len(best.rows[0].cells) - 3:]}")
+            stats.append(selected.mid())
+            bests.append(best.rows[0])
+            lite.append(dark.pop(todo))
+
+        print('\n'.join(map(str, list_1)))
+        print('\n'.join(map(str, list_2)))
+        print('\n'.join(map(str, list_3)))
+        print('\n'.join(map(str, list_4)))
+        print('\n'.join(map(str, list_5)))
+        print('\n'.join(map(str, list_6)))
+
+        return stats, bests
+
+    def best_rest(self, rows, want):
+        rows.sort(key=lambda r: r.d2h(self))
+        best, rest = [self.cols.names], [self.cols.names]
+        for i, row in enumerate(rows):
+            if i < want:
                 best.append(row)
             else:
                 rest.append(row)
-
         return DATA(best), DATA(rest)
 
     def split(self, best, rest, lite, dark):

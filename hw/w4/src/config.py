@@ -4,7 +4,7 @@ class CONFIG:
             'dump': False,
             'go': None,
             'seed': 937162211,
-            'cohen':0.35
+            'cohen': 0.35
         }
 
         self.help = '''USAGE:   python main.py [OPTIONS] [-g ACTION]
@@ -25,7 +25,7 @@ class CONFIG:
         return self.help
     
     def setthe(self,att,value):
-        if att=="seed":
+        if att == "seed":
             self.the[att] = int(value)
-        elif att=="cohen":
+        elif att == "cohen":
             self.the[att] = float(value)

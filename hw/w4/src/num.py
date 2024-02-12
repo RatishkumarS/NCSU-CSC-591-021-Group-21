@@ -31,8 +31,11 @@ class NUM:
     def small(self):
         pass
 
-    def norm(self,x):
-        pass
+    def norm(self, x):
+        if x == "?":
+            return x
+        else:
+            return (x - self.low) / (self.hi - self.low + 1E-30)
 
     def like(self, x, _):
         mu, sd = self.mid(), (self.div() + 1E-30)

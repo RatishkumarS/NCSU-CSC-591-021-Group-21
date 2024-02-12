@@ -1,25 +1,26 @@
 import math
+from constants import *
+from helpers import coerce
+
 
 class ROW:
     def __init__(self, t):
         self.cells = t
-        self.k = 1
+        # self.k = constants.the['k']
 
     @classmethod
     def new(cls, t):
         return cls(t)
-    
-    def like(self, data, n, nHypotheses):
-        prior = (len(data.row) + self.k) / (n + self.k * nHypotheses)
-        out = math.log(prior)
 
-        for col in data.cols.x.values():
+    def like(self, data, n, nHypotheses):
+        prior = (len(data.row) + the['k']) / (n + the['k'] * nHypotheses)
+        out = math.log(prior) if prior != 0 else float("-inf")
+        for col in data.cols.x.items():
+            print(col)
             v = self.cells[col.at]
             if v != "?":
                 inc = col.like(v, prior)
-                if inc > 0:
-                    out += math.log2(inc)
-
+                out = out + (math.log(inc) if inc != 0 else float("-inf"))
         return math.exp(1) ** out
 
     def likes(self, datas):
@@ -37,11 +38,13 @@ class ROW:
 
         return out, most
     
-    def d2h(row, data):
+    def d2h(self, data):
         d, n = 0, 0
 
-        for col in data.cols.y:
+        for col in data.cols.y.values():
             n += 1
-            d += abs(col.heaven - col.norm(row.cells[col.at])) ** 2
+            norm = col.norm(coerce(self.cells[col.at]))
+            d += abs(col.heaven - norm) ** 2
 
         return (d ** 0.5) / (n ** 0.5)
+

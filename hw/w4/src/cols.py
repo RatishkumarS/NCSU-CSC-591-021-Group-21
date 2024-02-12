@@ -3,13 +3,9 @@ from sym import SYM
 
 class COLS:
     # Create
-    def __init__(self, row,heaven,norm,at):
+    def __init__(self, row):
         x, y, all_cols = {}, {}, []
         klass, col = None, None
-        self.heaven = heaven
-        self.norm = norm
-        self.at = at
-
 
         for at, txt in enumerate(row):
             col = (SYM if txt.startswith("A-Z") else NUM)(txt, at)
@@ -18,8 +14,7 @@ class COLS:
             if not txt.endswith("X"):
                 if txt.endswith("!"):
                     klass = col
-
-                (y if txt.endswith("[!+−]") else x)[at] = col
+            (y if txt.endswith(("!", "+", "-")) else x)[at] = col
 
         self.x = x
         self.y = y
