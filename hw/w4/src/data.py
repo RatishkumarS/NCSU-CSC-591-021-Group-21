@@ -1,7 +1,10 @@
-import csv
+
+import numpy as np
 from row import ROW
 from cols import COLS
 import random
+from helpers import *
+import csv
 
 
 class DATA:
@@ -13,10 +16,13 @@ class DATA:
                 csv_reader = csv.reader(csvfile)
                 for row in csv_reader:
                     self.add(row, fun)
+        else:
+            for x in src:
+                self.add(x,fun)
 
     def add(self, t, fun=None, row=None):
         if isinstance(t, ROW):
-            row = t.cells
+            row = t
         else:
             row = ROW(t)
 
@@ -27,9 +33,11 @@ class DATA:
         else:
             self.cols = COLS(t)
 
-    def mid(self, cols, u):
+    def mid(self, cols=None):
+        if cols is None: 
+            cols=self.cols.all
         u = []
-        for col in (self.cols or self.cols.all):
+        for col in cols:
             u.append(col.mid())
         return ROW(u)
     
@@ -45,7 +53,7 @@ class DATA:
             u.append(col.small())
         return ROW(u)
     
-    def stats(self, cols=None, fun=None, ndivs=None, u=None):
+    def stats(self, cols=None, fun=None, ndivs=None, u=None,lists=None):
         u = {".N":len(self.row)}
         for i,j in zip(self.cols.names,self.cols.all):
             if i in ['Lbs-','Acc+','Mpg+']:
@@ -55,11 +63,12 @@ class DATA:
     def gate(self, random_seed, budget0=4, budget=10, some=0.5):
         random.seed(random_seed)
         list_1, list_2, list_3, list_4, list_5, list_6 = [], [], [], [], [], []
+        print("['Lbs-','Acc+','Mpg+']")
 
         # shuffling the rows
         rows = random.sample(self.row, len(self.row))
-
-        list_1.append(f"1. top6: {[r.cells[len(r.cells) - 3:] for r in rows[:6]]}")
+        # list_1.append(1)
+        list_1.append(f"1. top6:{[r.cells[len(r.cells) - 3:] for r in rows[:6]]}")
         list_2.append(f"2. top50:{[[r.cells[len(r.cells) - 3:] for r in rows[:50]]]}")
 
         # sorting rows based on d2h
@@ -77,8 +86,7 @@ class DATA:
 
         for i in range(budget):
             best, rest = self.best_rest(lite, len(lite) ** some)
-            print(best.stats(), rest.stats())
-            todo, selected, max_value = self.split(best, rest, lite, dark)
+            todo, selected = self.split(best, rest, lite, dark)
 
             selected_rows_rand = random.sample(dark, budget0 + i)
             y_values_rand = []
@@ -88,9 +96,9 @@ class DATA:
 
             list_4.append(f"4: rand:{np.mean(np.array(y_values_rand), axis=0)}")
             list_5.append(f"5: mid: {selected.mid().cells[len(selected.mid().cells) - 3:]}")
-            list_6.append(f"6: top: {best.rows[0].cells[len(best.rows[0].cells) - 3:]}")
+            list_6.append(f"6: top: {best.row[0].cells[len(best.row[0].cells) - 3:]}")
             stats.append(selected.mid())
-            bests.append(best.rows[0])
+            bests.append(best.row[0])
             lite.append(dark.pop(todo))
 
         print('\n'.join(map(str, list_1)))
@@ -113,7 +121,7 @@ class DATA:
         return DATA(best), DATA(rest)
 
     def split(self, best, rest, lite, dark):
-        selected = DATA(self.cols.names)
+        selected = DATA([self.cols.names])
         max_val = 1E30
         out = 1
 
