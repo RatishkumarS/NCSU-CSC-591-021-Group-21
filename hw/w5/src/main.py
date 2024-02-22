@@ -1,7 +1,7 @@
 import sys
 from config import CONFIG
 from data import DATA
-from test import *
+from tests import * 
 from learn import *
 import constants
 
@@ -42,6 +42,11 @@ def cli():
                     file = str(args[1])
                     bayes(file)
                     dataobj = DATA(file)
+        if args[0] == "--w5" or "-w5" in args:
+            file=str(args[1])
+            d=DATA(file)
+            test_dist(d)
+            test_far(file)
         if args[0] == "--dist" or args[0] == "-d":
             dist()
         if args[0] == "--test" or args[0] == "-t":

@@ -24,3 +24,4 @@ class CONFIG:
             self.the[att] = int(value)
         elif att == "cohen":
             self.the[att] = float(value)
+    

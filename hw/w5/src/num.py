@@ -9,8 +9,8 @@ class NUM:
         self.n = 0
         self.mu = 0
         self.m2 = 0
-        self.hi = -float("inf")
-        self.low = float("inf")
+        self.hi = -1E30
+        self.low = 1E30
         self.heaven = 0 if (s or "").endswith("-") else 1
 
     def add(self, x, d=0):
@@ -33,7 +33,7 @@ class NUM:
         pass
 
     def norm(self, x):
-        return x if x == "?" else (x - self.lo) / (self.hi - self.lo + 1e-30)
+        return x if x == "?" else (float(x) - self.low) / (self.hi - self.low + 1E-30)
 
     def like(self, x, _):
         mu, sd = self.mid(), (self.div() + 1e-30)
