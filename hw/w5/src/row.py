@@ -38,10 +38,10 @@ class ROW:
 
     def dist(self, other, data, d=0, n=0, p=None):
         d, n, p = 0, 0, 2  # Assuming the.p is defined in the scope
-    
+        # print("dist->",other.cells)
         for col in data.cols.x.values():
             n += 1
-            d += col.dist(self.cells[col.at], other.cells[col.at]) ** p
+            d += math.pow(col.dist(self.cells[col.at], other.cells[col.at]),p)
     
         return (d / n) ** (1 / p)
 
@@ -49,11 +49,6 @@ class ROW:
     def neighbors(self, data, row=None):
         if row is None:
             row=data.row
-        return self.keysort(row, lambda rows: self.dist(rows, data))
-    
-    def keysort(self,t, fun):
-        u = [{'x': x, 'y': fun(x)} for x in t] 
-        u.sort(key=lambda xy: xy['y'])          
-        v = [xy['x'] for xy in u]               
-        return v
+        row.sort(key=lambda rows: self.dist(rows, data))
+        return row
 

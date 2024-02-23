@@ -16,6 +16,8 @@ class DATA:
             with open(src, "r") as csvfile:
                 csv_reader = csv.reader(csvfile)
                 for row in csv_reader:
+                    for index in range(len(row)):
+                        row[index]=coerce(row[index])
                     self.add(row, fun)
 
     def add(self, t, fun, row=None):

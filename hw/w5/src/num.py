@@ -14,8 +14,8 @@ class NUM:
         self.heaven = 0 if (s or "").endswith("-") else 1
 
     def add(self, x, d=0):
-        if x != "?" and x.replace(".", "", 1).isdigit():
-            x = ast.literal_eval(x)
+        if x != "?":
+            # x = ast.literal_eval(x)
             self.n += 1
             d = x - self.mu
             self.mu += d / self.n
@@ -33,7 +33,8 @@ class NUM:
         pass
 
     def norm(self, x):
-        return x if x == "?" else (float(x) - self.low) / (self.hi - self.low + 1E-30)
+        # print(type(x), "->",x)
+        return x if x == "?" else (x - self.low) / (self.hi - self.low + 1E-30)
 
     def like(self, x, _):
         mu, sd = self.mid(), (self.div() + 1e-30)

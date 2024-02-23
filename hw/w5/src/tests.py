@@ -37,9 +37,12 @@ def test_dist(d):
         if i%30==0:
             print(i+1,o(row.cells),rnd(row.dist(r1,d)))
 def test_far(file):
+    print("======================Task2=========================")
     d = DATA(file)
     a, b, C,evals= d.farapart(d.row)
-    print(o(a),b,C,evals)
+    print("Far 1:", a.cells)
+    print("Far 2:", b.cells)
+    print("distance = ",C)
 
 def o(t, n=None):
         if isinstance(t, (int, float)):
