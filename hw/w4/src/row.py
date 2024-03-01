@@ -1,6 +1,6 @@
 import math
 from constants import *
-from helpers import coerce
+from helpers import *
 
 
 class ROW:
@@ -15,8 +15,7 @@ class ROW:
     def like(self, data, n, nHypotheses):
         prior = (len(data.row) + the['k']) / (n + the['k'] * nHypotheses)
         out = math.log(prior) if prior != 0 else float("-inf")
-        for col in data.cols.x.items():
-            print(col)
+        for col in data.cols.x.values():
             v = self.cells[col.at]
             if v != "?":
                 inc = col.like(v, prior)

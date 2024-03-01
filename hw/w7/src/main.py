@@ -1,9 +1,9 @@
 import sys
 from config import CONFIG
 from data import DATA
-from tests import * 
+from test import *
 from learn import *
-import constants
+from constants import *
 
 
 def dist():
@@ -16,6 +16,17 @@ def dist():
     for i, row in enumerate(rows):
         if i % 30 == 0:
             print(i + 1, row.cells, row.dist(row1, data))
+
+
+def bins():
+    # print("Inside bins function")
+    data = DATA("auto93.csv")
+    best, rest, evals = data.bins()
+    best_data = [round(cell, 2) for cell in best.mid().cells]
+    print("Best: {0}".format(best_data))
+    rest_data = [round(cell, 2) for cell in rest.mid().cells]
+    print("Rest: {0}".format(rest_data))
+    print("evals: {0}".format(evals))   
 
 
 def cli():
@@ -42,13 +53,10 @@ def cli():
                     file = str(args[1])
                     bayes(file)
                     dataobj = DATA(file)
-        if args[0] == "--w5" or "-w5" in args:
-            file=str(args[1])
-            d=DATA(file)
-            test_dist(d)
-            test_far(file)
         if args[0] == "--dist" or args[0] == "-d":
             dist()
+        if args[0] == "--branch":
+            bins()
         if args[0] == "--test" or args[0] == "-t":
             if args[3] == "sym":
                 print(test_sym())

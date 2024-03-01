@@ -1,9 +1,11 @@
 import csv
+import random
 from row import ROW
 from cols import COLS
 from sym import SYM
 import numpy as np
 import ast
+from config import *
 
 
 class DATA:
@@ -14,6 +16,8 @@ class DATA:
             with open(src, "r") as csvfile:
                 csv_reader = csv.reader(csvfile)
                 for row in csv_reader:
+                    for index in range(len(row)):
+                        row[index]=coerce(row[index])
                     self.add(row, fun)
 
     def add(self, t, fun, row=None):
@@ -53,3 +57,12 @@ class DATA:
             if i in ["Lbs-", "Acc+", "Mpg+"]:
                 u[i] = round(j.mid(), 2)
         return u
+    
+    def farapart(self,rows, sortp=None, a=None, b=None, far=None, evals=None):
+        far = int((len(rows) * 1 ) // 1) 
+        evals = a and 1 or 2
+        a = a or random.choice(rows).neighbors(self, rows)[far-1]
+        b = a.neighbors(self, rows)[far-1]
+        if sortp and b.d2h(self) < a.d2h(self):
+            a, b = b, a
+        return (a, b, a.dist(b, self), evals)

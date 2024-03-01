@@ -1,8 +1,9 @@
 import sys
 from config import CONFIG
 from data import DATA
-from test import *
+# from hw.w4.src.test import *
 import random
+from test import *
 
 temp = CONFIG()
 

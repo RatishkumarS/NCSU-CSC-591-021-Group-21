@@ -36,19 +36,15 @@ class ROW:
 
         return out, most
 
-    def dist(self, other, data, d=0, n=0, p=None):
-        d, n, p = 0, 0, 2  # Assuming the.p is defined in the scope
-        # print("dist->",other.cells)
-        for col in data.cols.x.values():
+    def dist(self, other, data):
+        d, n, p = 0, 0, 2
+        for col in data.cols.x:
+            print(col)
             n += 1
-            d += math.pow(col.dist(self.cells[col.at], other.cells[col.at]),p)
-    
+            d += col.dist(self.cells[col.at], other.cells[col.at]) ** p
+
         return (d / n) ** (1 / p)
 
-
-    def neighbors(self, data, row=None):
-        if row is None:
-            row=data.row
-        row.sort(key=lambda rows: self.dist(rows, data))
-        return row
-
+    def neighbors(self, data, rows=None):
+        rows = rows or data.row
+        return sorted(rows, key=lambda row: self.dist(row, data))
