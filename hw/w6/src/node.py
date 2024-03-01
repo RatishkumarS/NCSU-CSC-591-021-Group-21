@@ -25,12 +25,6 @@ class NODE:
 
         def _show(node, depth, leafp):
             nonlocal maxDepth
-            # print('-->')
-            # print(d2h(node.here), type(d2h(node.here)))
-            # print('---->')
-            # print(o(node.here.mid().cells), type(o(node.here.mid().cells)))
-            # print('------>')
-            # print(leafp)
             post = "\t\t" + o(node.here.mid().cells) if leafp else ""
             maxDepth = max(maxDepth, depth)
             print(('|.. ' * depth) + post)
@@ -39,4 +33,3 @@ class NODE:
         print("")
         print(("    " * maxDepth) + "\t\t" + o(self.here.mid().cells))
         print(("    " * maxDepth) + "\t" + o(self.here.cols.names))
-        # print("evals")
