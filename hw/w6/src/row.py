@@ -39,13 +39,13 @@ class ROW:
     def dist(self, other, data, d=0, n=0, p=None):
         d, n, p = 0, 0, 2  # Assuming the.p is defined in the scope
         # print("dist->",other.cells)
-        for col in data.cols.x.values():
+        for col in data.cols.x:
             n += 1
             d += math.pow(col.dist(self.cells[col.at], other.cells[col.at]), p)
 
         return (d / n) ** (1 / p)
     
-    def keysort(t, fun):
+    def keysort(self, t, fun):
         u = [{'x': x, 'y': fun(x)} for x in t]
         u.sort(key=lambda a: a['y'])
         v = [xy['x'] for xy in u]

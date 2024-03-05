@@ -189,8 +189,6 @@ class DATA:
         return a, b, a.dist(b, self), evals
 
     def far(the, data_new):
-        print()
-        print("Task 2: Get Far Working\n")
         target_distance = 0.95
         current_distance = 0
         attempts = 0
