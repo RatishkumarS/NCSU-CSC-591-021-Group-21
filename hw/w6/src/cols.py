@@ -6,14 +6,14 @@ from sym import SYM
 class COLS:
     def __init__(self, row):
         # Initialize all of the values of empty list
-        self.x, self.y, self.all_cols = [], [], []
+        self.x, self.y, self.all = [], [], []
         # Get the names of row cells
         self.klass, self.names = None, row.cells
 
         for at, txt in enumerate(row.cells):
             # Check whether the col value belongs to NUM or SYM
             col = (NUM if txt[0].isalpha() and txt[0].isupper() else SYM)(txt, at)
-            self.all_cols.append(col)
+            self.all.append(col)
             if not txt.endswith("X"):
                 if txt.endswith("!"):
                     self.klass = col
