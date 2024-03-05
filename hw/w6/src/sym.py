@@ -4,7 +4,7 @@ from constants import *
 
 # Create a class and define a constructor
 class SYM:
-    def __init__(self, s=None, n=None):
+    def __init__(self, s=None, n=0):
         self.txt = s or " "
         self.at = n or 0
         self.n = 0
