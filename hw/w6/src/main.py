@@ -3,7 +3,8 @@ from config import CONFIG
 from data import DATA
 from test import *
 from learn import *
-import constants
+import constants, re, time
+from datetime import datetime
 
 
 def dist():
@@ -16,6 +17,44 @@ def dist():
     for i, row in enumerate(rows):
         if i % 30 == 0:
             print(i + 1, row.cells, row.dist(row1, data))
+
+def set_random_seed():
+        seed = int(re.sub(r'[^0-9]', '', str(time.time())[-7:]))
+        return seed
+
+def display_smo9():
+        data = DATA("auto93.csv")
+        
+        data_new = DATA("auto93.csv")
+        full_mid, full_div = data_new.mid_div()
+
+        smo_output = []
+        any50_output = []
+
+        budget0, budget, some = 4, 10, 0.5
+        for i in range(20):
+            random_seed = set_random_seed()
+            d = DATA("auto93.csv") 
+            ign1, ign2, line = d.gate(random_seed, budget0, budget, some)
+            smo_output.append(line)
+            any50_output.append(d.any50(random_seed))
+
+        best = d.best_100(random_seed)
+    
+        print("date : {} \nfile : {} \nrepeat : {} \nseed : {} \nrows : {} \ncols : {}".format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"auto93.csv","20","32400",len(data_new.rows), len(data_new.rows[0].cells)))
+        print("names : \t{}\t\t{}".format(d.cols.names,"D2h-"))
+        print("mid : \t\t{}\t\t\t\t{}".format(list(full_mid[0].values())[1:],full_mid[1]))
+        print("div : \t\t{}\t\t\t\t\t{}".format(list(full_div[0].values())[1:],full_div[1]))
+        print("#")
+        smo_output = sorted(smo_output, key=lambda x: x[1])
+        for op in smo_output:
+            print("smo9\t\t{}\t\t\t\t{}".format(op[0],op[1]))
+        print("#")
+        any50_output = sorted(any50_output, key=lambda x: x[1])
+        for op in any50_output:
+            print("any50\t\t{}\t\t\t\t{}".format(op[0],op[1]))
+        print("#")
+        print("100%\t\t{}\t\t\t\t{}".format(best[0],best[1]))
 
 
 def cli():
@@ -44,15 +83,13 @@ def cli():
                     dataobj = DATA(file)
         if args[0] == "--dist" or args[0] == "-d":
             dist()
+        if args[0] == "--smo9":
+            display_smo9()
         if args[0] == "--test" or args[0] == "-t":
-            if args[3] == "sym":
-                print(test_sym())
-            elif args[3] == "stats":
+            if args[3] == "stats":
                 fname = args[1].split("/")[-1]
                 fstats = dataobj.stats()
                 print(fstats)
-            elif args[3] == "config":
-                print(test_seed_cohen())
 
 
 cli()
