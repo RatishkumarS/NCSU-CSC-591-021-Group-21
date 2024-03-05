@@ -2,9 +2,8 @@ import math
 from constants import *
 
 
-# Symbols
+# Create a class and define a constructor
 class SYM:
-    # Create
     def __init__(self, s=None, n=None):
         self.txt = s or " "
         self.at = n or 0
@@ -13,15 +12,20 @@ class SYM:
         self.mode = None
         self.most = 0
 
-    # Update
     def add(self, x):
         if x != "?":
             self.n += 1
-            self.has[x] = 1 + (self.has.get(x, 0))
+            self.has[x] = 1 + self.has.get(x, 0)
             if self.has[x] > self.most:
                 self.most, self.mode = self.has[x], x
 
-    # Query
+    def like(self, x, prior):
+        h = self.has[x] if x in self.has else 0
+        if self.n == 0 and the["m"] == 0:
+            return 0
+        else:
+            return (h + the["m"] * prior) / (self.n + the["m"])
+
     def mid(self):
         return self.mode
 
@@ -33,20 +37,5 @@ class SYM:
     def small(self):
         return 0
 
-    def like(self, x, prior):
-        h = self.has[x] if x in self.has else 0
-        if self.n == 0 and the["m"] == 0:
-            return 0
-        else:
-            return (h + the["m"] * prior) / (self.n + the["m"])
-
     def dist(self, x, y):
         return 1 if x == "?" and y == "?" else 0 if x == y else 1
-
-
-# Example usage:
-# sym_instance = SYM("example")
-# sym_instance.add("value")
-# print(sym_instance.mid())
-# print(sym_instance.div())
-# print(sym_instance.small())
