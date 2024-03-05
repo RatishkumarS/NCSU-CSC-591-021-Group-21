@@ -7,7 +7,7 @@ class ROW:
         self.cells = t
 
     def like(self, data, n, nHypotheses):
-        prior = (len(data.row) + the["k"]) / (n + the["k"] * nHypotheses)
+        prior = (len(data.rows) + the["k"]) / (n + the["k"] * nHypotheses)
         out = math.log(prior) if prior != 0 else float("-inf")
 
         for col in data.cols.x:
@@ -50,3 +50,10 @@ class ROW:
         u.sort(key=lambda a: a['y'])
         v = [xy['x'] for xy in u]
         return v
+    
+    def d2h(self, data):
+        d, n, p = 0, 0, 2
+        for col in data.cols.y:
+            n += 1
+            d += abs(col.heaven - col.norm(self.cells[col.at])) ** p
+        return math.sqrt(d) / math.sqrt(n)
