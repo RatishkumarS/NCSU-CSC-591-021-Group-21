@@ -1,3 +1,4 @@
+import random
 import sys
 from config import CONFIG
 from data import DATA
@@ -5,6 +6,8 @@ from test import *
 from learn import *
 import constants, re, time
 from datetime import datetime
+from statistics import mean ,stdev
+import Stats
 
 
 def dist():
@@ -55,6 +58,62 @@ def display_smo9():
             print("any50\t\t{}\t\t\t\t{}".format(op[0],op[1]))
         print("#")
         print("100%\t\t{}\t\t\t\t{}".format(best[0],best[1]))
+def smo_stats():
+    data =DATA("auto93.csv")
+    print("date : {} \nfile : {} \nrepeat : {} \nseed : {} ".format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"auto93.csv","20","32400"))
+    r=data.rows
+    r.sort(key=lambda x: x.d2h(data))
+    ceil=rnd(r[0].d2h(data))
+    bonr9=[]
+    rand358=[]
+    rand20=[]
+    bonr20=[]
+    rand15=[]
+    bonr15=[]
+    rand9=[]
+    for i in range(20):
+        bonr9.append(bonr_col(9))
+        rand9.append(rand_col(9))
+        bonr15.append(bonr_col(15))
+        rand15.append(rand_col(20))
+        bonr20.append(bonr_col(20))
+        rand20.append(rand_col(20))
+        rand358.append(rand_col(358))
+    all_std=all_std_rows(data.rows,data)
+    stddev=stdev(all_std)
+    tiny=rnd(0.35*stddev)
+    print("best:{} \ntiny:{}".format(ceil,tiny))
+    print("base bonr9 rand9 bonr15 rand15 bonr20 rand20 rand358")
+    print("Report8")
+    Stats.eg0([
+        Stats.NUM(bonr9,"bonr9"),
+        Stats.NUM(rand9,"rand9"),
+        Stats.NUM(bonr15,"bonr15"),
+        Stats.NUM(rand15,"rand15"),
+        Stats.NUM(bonr20,"bonr20"),
+        Stats.NUM(rand20,"rand20"),
+        Stats.NUM(rand358,"rand358"),
+        Stats.NUM(all_std,"base")
+    ])
+
+def bonr_col(n):
+    data=DATA("auto93.csv")
+    stats,bests,x=data.gate(32400,4,n-4,0.5)
+    stat,best=stats[-1],bests[-1]
+    return rnd(best.d2h(data))
+def rand_col(n):
+    data=DATA("auto93.csv")
+    r=random.sample(data.rows,n)
+    r.sort(key=lambda x:x.d2h(data))
+    return rnd(r[0].d2h(data))
+
+def all_std_rows(rowss,data):
+    all_d2h=[]
+    for rows in rowss:
+        all_d2h.append(rows.d2h(data))
+    return all_d2h
+
+
 
 
 def cli():
@@ -85,6 +144,8 @@ def cli():
             dist()
         if args[0] == "--smo9":
             display_smo9()
+        if args[0] == "--w8Task2":
+            smo_stats()
         if args[0] == "--test" or args[0] == "-t":
             if args[3] == "stats":
                 fname = args[1].split("/")[-1]
