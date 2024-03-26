@@ -16,7 +16,7 @@ def slurp(file):
   if len(lst)>0: nums += [NUM(lst,last)]
   return nums
 
-class NUM:
+class Num:
   "stores mean, standard deviation, low, high, of a list of numbers"
   def __init__(self,lst=[],txt="",rank=0):
     self.has,self.check = [],False

@@ -1,4 +1,4 @@
-from hw.w8.src.Stats import NUM
+from Stats import Num
 import random
 import sys
 from config import CONFIG
@@ -85,15 +85,15 @@ def smo_stats():
     print("best:{} \ntiny:{}".format(ceil,tiny))
     print("base bonr9 rand9 bonr15 rand15 bonr20 rand20 rand358")
     print("Report8")
-    NUM.eg0([
-        NUM(bonr9,"bonr9"),
-        NUM(rand9,"rand9"),
-        NUM(bonr15,"bonr15"),
-        NUM(rand15,"rand15"),
-        NUM(bonr20,"bonr20"),
-        NUM(rand20,"rand20"),
-        NUM(rand358,"rand358"),
-        NUM(all_std,"base")
+    Num.eg0([
+        Num(bonr9,"bonr9"),
+        Num(rand9,"rand9"),
+        Num(bonr15,"bonr15"),
+        Num(rand15,"rand15"),
+        Num(bonr20,"bonr20"),
+        Num(rand20,"rand20"),
+        Num(rand358,"rand358"),
+        Num(all_std,"base")
     ])
 def bonr_col(n):
     data=DATA("auto93.csv")
