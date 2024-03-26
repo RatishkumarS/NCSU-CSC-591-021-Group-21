@@ -1,5 +1,3 @@
-from hw.w8.src.Stats import NUM
-import random
 import sys
 from config import CONFIG
 from data import DATA
@@ -7,109 +5,204 @@ from test import *
 from learn import *
 import constants, re, time
 from datetime import datetime
-from statistics import mean ,stdev
+import random, math
+from range import RANGE
+
+
+def o(t, n=None, u=None):
+    if isinstance(t, (int, float)):
+        return str(round(t, n))
+    if not isinstance(t, dict):
+        return str(t)
+
+    u = []
+    for k, v in t.items():
+        if str(k)[0] != "_":
+            if len(t) > 0:
+                u.append(o(v, n))
+            else:
+                u.append(f"%s: %s", o(k, n), o(v, n))
+
+    return "{" + ", ".join(u) + "}"
 
 
 def dist():
     data = DATA("auto93.csv")
 
-    row1 = data.row[0]
-    # print(row1.cells)
+    # row1 = data.rows[0]
+    # # print(row1.cells)
 
-    rows = row1.neighbors(data)
-    for i, row in enumerate(rows):
-        if i % 30 == 0:
-            print(i + 1, row.cells, row.dist(row1, data))
+    # rows = row1.neighbors(data)
+    # for i, row in enumerate(rows):
+    #     if i % 30 == 0:
+    #         print(i + 1, row.cells, row.dist(row1, data))
+
+    data_new = DATA("auto93.csv")
+    # DATA.far(the, data_new)
+
+    # t, evals = data_new.tree(True)
+    # t.show()
+    # print("evals: ", evals)
+
+    # print("Task 2: Optimization - Single Descent\n")
+    # best, rest, evals = data_new.branch()
+    # print("centroid of output cluster: ")
+    # print(o(best.mid().cells), o(rest.mid().cells))
+    # print("evals: ", evals)
+
+    print("Task 3: Doubletap\n")
+    best1, rest, evals1 = data_new.branch(32)
+    best2, _, evals2 = best1.branch(4)
+    print("Median and Best: ")
+    print(o(best2.mid().cells), o(rest.mid().cells))
+    print("evals: ", evals1 + evals2)
+
 
 def set_random_seed():
-        seed = int(re.sub(r'[^0-9]', '', str(time.time())[-7:]))
-        return seed
+    seed = int(re.sub(r"[^0-9]", "", str(time.time())[-7:]))
+    return seed
+
 
 def display_smo9():
-        data = DATA("auto93.csv")
-        
-        data_new = DATA("auto93.csv")
-        full_mid, full_div = data_new.mid_div()
+    data = DATA("auto93.csv")
 
-        smo_output = []
-        any50_output = []
+    data_new = DATA("auto93.csv")
+    full_mid, full_div = data_new.mid_div()
 
-        budget0, budget, some = 4, 10, 0.5
-        for i in range(20):
-            random_seed = set_random_seed()
-            d = DATA("auto93.csv") 
-            ign1, ign2, line = d.gate(random_seed, budget0, budget, some)
-            smo_output.append(line)
-            any50_output.append(d.any50(random_seed))
+    smo_output = []
+    any50_output = []
 
-        best = d.best_100(random_seed)
-    
-        print("date : {} \nfile : {} \nrepeat : {} \nseed : {} \nrows : {} \ncols : {}".format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"auto93.csv","20","32400",len(data_new.rows), len(data_new.rows[0].cells)))
-        print("names : \t{}\t\t{}".format(d.cols.names,"D2h-"))
-        print("mid : \t\t{}\t\t\t\t{}".format(list(full_mid[0].values())[1:],full_mid[1]))
-        print("div : \t\t{}\t\t\t\t\t{}".format(list(full_div[0].values())[1:],full_div[1]))
-        print("#")
-        smo_output = sorted(smo_output, key=lambda x: x[1])
-        for op in smo_output:
-            print("smo9\t\t{}\t\t\t\t{}".format(op[0],op[1]))
-        print("#")
-        any50_output = sorted(any50_output, key=lambda x: x[1])
-        for op in any50_output:
-            print("any50\t\t{}\t\t\t\t{}".format(op[0],op[1]))
-        print("#")
-        print("100%\t\t{}\t\t\t\t{}".format(best[0],best[1]))
-def smo_stats():
-    data =DATA("auto93.csv")
-    print("date : {} \nfile : {} \nrepeat : {} \nseed : {} ".format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"),"auto93.csv","20","32400"))
-    r=data.rows
-    r.sort(key=lambda x: x.d2h(data))
-    ceil=rnd(r[0].d2h(data))
-    bonr9=[]
-    rand358=[]
-    rand20=[]
-    bonr20=[]
-    rand15=[]
-    bonr15=[]
-    rand9=[]
+    budget0, budget, some = 4, 10, 0.5
     for i in range(20):
-        bonr9.append(bonr_col(9))
-        rand9.append(rand_col(9))
-        bonr15.append(bonr_col(15))
-        rand15.append(rand_col(20))
-        bonr20.append(bonr_col(20))
-        rand20.append(rand_col(20))
-        rand358.append(rand_col(358))
-    all_std=all_std_rows(data.rows,data)
-    stddev=stdev(all_std)
-    tiny=rnd(0.35*stddev)
-    print("best:{} \ntiny:{}".format(ceil,tiny))
-    print("base bonr9 rand9 bonr15 rand15 bonr20 rand20 rand358")
-    print("Report8")
-    NUM.eg0([
-        NUM(bonr9,"bonr9"),
-        NUM(rand9,"rand9"),
-        NUM(bonr15,"bonr15"),
-        NUM(rand15,"rand15"),
-        NUM(bonr20,"bonr20"),
-        NUM(rand20,"rand20"),
-        NUM(rand358,"rand358"),
-        NUM(all_std,"base")
-    ])
-def bonr_col(n):
-    data=DATA("auto93.csv")
-    stats,bests,x=data.gate(32400,4,n-4,0.5)
-    stat,best=stats[-1],bests[-1]
-    return rnd(best.d2h(data))
-def rand_col(n):
-    data=DATA("auto93.csv")
-    r=random.sample(data.rows,n)
-    r.sort(key=lambda x:x.d2h(data))
-    return rnd(r[0].d2h(data))
-def all_std_rows(rowss,data):
-    all_d2h=[]
-    for rows in rowss:
-        all_d2h.append(rows.d2h(data))
-    return all_d2h
+        random_seed = set_random_seed()
+        d = DATA("auto93.csv")
+        ign1, ign2, line = d.gate(random_seed, budget0, budget, some)
+        smo_output.append(line)
+        any50_output.append(d.any50(random_seed))
+
+    best = d.best_100(random_seed)
+
+    print(
+        "date : {} \nfile : {} \nrepeat : {} \nseed : {} \nrows : {} \ncols : {}".format(
+            datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "auto93.csv",
+            "20",
+            "32400",
+            len(data_new.rows),
+            len(data_new.rows[0].cells),
+        )
+    )
+    print("names : \t{}\t\t{}".format(d.cols.names, "D2h-"))
+    print("mid : \t\t{}\t\t\t\t{}".format(list(full_mid[0].values())[1:], full_mid[1]))
+    print(
+        "div : \t\t{}\t\t\t\t\t{}".format(list(full_div[0].values())[1:], full_div[1])
+    )
+    print("#")
+    smo_output = sorted(smo_output, key=lambda x: x[1])
+    for op in smo_output:
+        print("smo9\t\t{}\t\t\t\t{}".format(op[0], op[1]))
+    print("#")
+    any50_output = sorted(any50_output, key=lambda x: x[1])
+    for op in any50_output:
+        print("any50\t\t{}\t\t\t\t{}".format(op[0], op[1]))
+    print("#")
+    print("100%\t\t{}\t\t\t\t{}".format(best[0], best[1]))
+
+
+def _ranges1(col, rowss):
+    out, nrows = {}, 0
+    for y, rows in rowss.items():
+        nrows += len(rows)
+        for row in list(rows):
+            x = row.cells[col.at]
+            if x != "?":
+                bin = col.bin(x)
+                if bin not in out:
+                    out[bin] = RANGE(col.at, col.txt, x)
+                out[bin].add(x, y)
+    out = list(out.values())
+    out.sort(key=lambda r: r.x["lo"])
+    return out if hasattr(col, "has") else _mergeds(out, nrows / 16)
+
+
+def _mergeds(ranges, tooFew):
+    t = []
+    i = 1
+    while i <= len(ranges):
+        a = ranges[i - 1]
+        if i < len(ranges):
+            both = a.merged(ranges[i], tooFew)
+            if both:
+                a = both
+                i += 1
+        t.append(a)
+        i += 1
+    if len(t) < len(ranges):
+        return _mergeds(t, tooFew)
+    for i in range(1, len(t)):
+        t[i].x["lo"] = t[i - 1].x["hi"]
+    t[0].x["lo"] = -math.inf
+    t[-1].x["hi"] = math.inf
+    return t
+
+
+def bins():
+    d = DATA("auto93.csv")
+    best, rest, _ = d.branch()
+    LIKE = best.rows
+    HATE = slice(random.sample(rest.rows, min(3 * len(LIKE), len(rest.rows))))
+
+    def score(range_):
+        return range_.score("LIKE", len(LIKE), len(HATE))
+
+    print()
+    print("PART - 1")
+    t = []
+    for col in list(d.cols.x):
+        print("")
+        for range_ in _ranges1(col, {"LIKE": LIKE, "HATE": HATE}):
+            temp_x = {"hi": range_.x["hi"], "lo": range_.x["lo"]}
+            temp_y = {}
+            if "HATE" in range_.y:
+                temp_y["HATE"] = range_.y["HATE"]
+            if "LIKE" in range_.y:
+                temp_y["LIKE"] = range_.y["LIKE"]
+            d = {
+                "at": (range_.at) + 1,
+                "scored": range_.scored,
+                "txt": range_.txt,
+                "x": temp_x,
+                "y": temp_y,
+            }
+            print(d)
+            t.append(range_)
+    t.sort(key=lambda a: score(a), reverse=True)
+    max_score = score(t[0])
+    print("\n\nPART - 2")
+    print("\n#scores:\n")
+    for v in t[: int(the["Beam"])]:
+        if score(v) > max_score * 0.1:
+            temp_x = {"hi": v.x["hi"], "lo": v.x["lo"]}
+            temp_y = {}
+            if "HATE" in v.y:
+                temp_y["HATE"] = v.y["HATE"]
+            if "LIKE" in v.y:
+                temp_y["LIKE"] = v.y["LIKE"]
+            d_v = {
+                "at": (v.at) + 1,
+                "scored": v.scored,
+                "txt": v.txt,
+                "x": temp_x,
+                "y": temp_y,
+            }
+            print("{:.2f}".format(round(score(v), 2)), d_v)
+    print(
+        {
+            "HATE": len(HATE),
+            "LIKE": len(LIKE),
+        }
+    )
+
 
 def cli():
     args = sys.argv[1:]
@@ -139,11 +232,13 @@ def cli():
             dist()
         if args[0] == "--smo9":
             display_smo9()
-        if args[0] == "--w8Task2":
-            smo_stats()
+        if args[0] == "--bins":
+            bins()
         if args[0] == "--test" or args[0] == "-t":
             if args[3] == "stats":
                 fname = args[1].split("/")[-1]
                 fstats = dataobj.stats()
                 print(fstats)
+
+
 cli()
