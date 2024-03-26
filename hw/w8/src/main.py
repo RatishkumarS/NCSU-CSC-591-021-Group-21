@@ -1,3 +1,4 @@
+from hw.w8.src.Stats import NUM
 import random
 import sys
 from config import CONFIG
@@ -7,7 +8,6 @@ from learn import *
 import constants, re, time
 from datetime import datetime
 from statistics import mean ,stdev
-import Stats
 
 
 def dist():
@@ -85,17 +85,16 @@ def smo_stats():
     print("best:{} \ntiny:{}".format(ceil,tiny))
     print("base bonr9 rand9 bonr15 rand15 bonr20 rand20 rand358")
     print("Report8")
-    Stats.eg0([
-        Stats.NUM(bonr9,"bonr9"),
-        Stats.NUM(rand9,"rand9"),
-        Stats.NUM(bonr15,"bonr15"),
-        Stats.NUM(rand15,"rand15"),
-        Stats.NUM(bonr20,"bonr20"),
-        Stats.NUM(rand20,"rand20"),
-        Stats.NUM(rand358,"rand358"),
-        Stats.NUM(all_std,"base")
+    NUM.eg0([
+        NUM(bonr9,"bonr9"),
+        NUM(rand9,"rand9"),
+        NUM(bonr15,"bonr15"),
+        NUM(rand15,"rand15"),
+        NUM(bonr20,"bonr20"),
+        NUM(rand20,"rand20"),
+        NUM(rand358,"rand358"),
+        NUM(all_std,"base")
     ])
-
 def bonr_col(n):
     data=DATA("auto93.csv")
     stats,bests,x=data.gate(32400,4,n-4,0.5)
@@ -106,15 +105,11 @@ def rand_col(n):
     r=random.sample(data.rows,n)
     r.sort(key=lambda x:x.d2h(data))
     return rnd(r[0].d2h(data))
-
 def all_std_rows(rowss,data):
     all_d2h=[]
     for rows in rowss:
         all_d2h.append(rows.d2h(data))
     return all_d2h
-
-
-
 
 def cli():
     args = sys.argv[1:]
@@ -151,6 +146,4 @@ def cli():
                 fname = args[1].split("/")[-1]
                 fstats = dataobj.stats()
                 print(fstats)
-
-
 cli()
