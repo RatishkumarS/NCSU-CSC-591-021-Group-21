@@ -3,7 +3,7 @@ from num import NUM
 from sym import SYM
 from cols import COLS
 from node import NODE
-import random, sys, re
+import random, re, sys
 import numpy as np
 
 
@@ -18,19 +18,6 @@ class DATA:
         else:
             self.add(src, fun)
 
-    def csv(self, src):
-        try:
-            src = sys.stdin if src == "-" else open(src, "r")
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File not found: {src}")
-        with src:
-            for i, line in enumerate(src, start=1):
-                yield i, self.cells(line.strip())
-
-    def cells(self, s):
-        t = [self.coerce(s1) for s1 in s.split(",")]
-        return t
-
     def coerce(self, s):
         def fun(s2):
             return (
@@ -43,6 +30,19 @@ class DATA:
             return float(s) if s is not None else None
         except ValueError:
             return fun(re.match(r"^\s*(.*\S)", s).group(1)) if isinstance(s, str) else s
+
+    def cells(self, s):
+        t = [self.coerce(s1) for s1 in s.split(",")]
+        return t
+
+    def csv(self, src):
+        try:
+            src = sys.stdin if src == "-" else open(src, "r")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"File not found: {src}")
+        with src:
+            for i, line in enumerate(src, start=1):
+                yield i, self.cells(line.strip())
 
     def add(self, t, fun=None):
         row = t if isinstance(t, ROW) else ROW(t)
@@ -81,7 +81,6 @@ class DATA:
         random.seed(random_seed)
         rows = random.sample(self.rows, len(self.rows))
         DATA.list_1.append(f"1. top6: {[r.cells[len(r.cells)-3:] for r in rows[:6]]}")
-
         DATA.list_2.append(
             f"2. top50:{[[r.cells[len(r.cells)-3:] for r in rows[:50]]]}"
         )
@@ -139,28 +138,6 @@ class DATA:
             [self.stats_div(), round(np.std(d2h_vals), 2)],
         ]
 
-    def half(self, rows, sortp, before):
-
-        the_half = min(len(rows) // 2, len(rows))
-        some = random.sample(rows, the_half)
-
-        # for row in some:
-        #     print(row.cells)
-
-        a, b, C, evals = self.farapart(some, sortp, before)
-
-        def d(row1, row2):
-            return row1.dist(row2, self)
-
-        def project(r):
-            return (d(r, a) ** 2 + C**2 - d(r, b) ** 2) / (2 * C)
-
-        rows_sorted = sorted(rows, key=project)
-        mid_point = len(rows) // 2
-        as_ = rows_sorted[:mid_point]
-        bs = rows_sorted[mid_point:]
-        return as_, bs, a, b, C, d(a, bs[0]), evals
-
     def split(self, best, rest, lite, dark):
         selected = DATA(self.cols.names, [])
         max_val = 0
@@ -178,18 +155,26 @@ class DATA:
 
         return out, selected
 
+    def best_rest(self, rows, want):
+        rows.sort(key=lambda a: a.d2h(self))
+        best = DATA(self.cols.names)
+        rest = DATA(self.cols.names)
+        for i, row in enumerate(rows):
+            if i < want:
+                best.add(row)
+            else:
+                rest.add(row)
+        return best, rest
+
     def farapart(self, rows, sortp, a=None, b=None, far=None, evals=0):
 
         far = int(len(rows) * 0.95) + 1
-        # print(far)
         evals = 1 if a is not None else 2
 
         a = a or random.choice(rows)
-        # print(a.cells)
 
         sorted_neighbors = a.neighbors(self, rows)
         a = a or sorted_neighbors[0]
-        # print(min(far, len(sorted_neighbors) - 1))
         b = sorted_neighbors[min(far, len(sorted_neighbors) - 1)]
 
         if sortp and b.d2h(self) < a.d2h(self):
@@ -197,7 +182,28 @@ class DATA:
 
         return a, b, a.dist(b, self), evals
 
+    def half(self, rows, sortp, before):
+
+        the_half = min(len(rows) // 2, len(rows))
+        some = random.sample(rows, the_half)
+
+        a, b, C, evals = self.farapart(some, sortp, before)
+
+        def d(row1, row2):
+            return row1.dist(row2, self)
+
+        def project(r):
+            return (d(r, a) ** 2 + C**2 - d(r, b) ** 2) / (2 * C)
+
+        rows_sorted = sorted(rows, key=project)
+        mid_point = len(rows) // 2
+        as_ = rows_sorted[:mid_point]
+        bs = rows_sorted[mid_point:]
+        return as_, bs, a, b, C, d(a, bs[0]), evals
+
     def far(the, data_new):
+        print()
+        print("Task 2: Get Far Working\n")
         target_distance = 0.95
         current_distance = 0
         attempts = 0
@@ -211,14 +217,10 @@ class DATA:
             print(f"far2: {b.cells}")
             print(f"distance: {current_distance}")
         else:
-            print("No pair found")
-        return current_distance, attempts
+            print("No pair found within the target distance after maximum attempts.")
 
-    def clone(self, rows=None):
-        new = DATA()
-        for row in rows or []:
-            new.add(row)
-        return new
+        print(f"Total Attempts: {attempts}")
+        return current_distance, attempts
 
     def tree(self, sortp):
         evals = 0
@@ -259,19 +261,14 @@ class DATA:
 
         return _branch(self)
 
-    def best_rest(self, rows, want):
-        rows.sort(key=lambda a: a.d2h(self))
-        best = DATA(self.cols.names)
-        rest = DATA(self.cols.names)
-        for i, row in enumerate(rows):
-            if i < want:
-                best.add(row)
-            else:
-                rest.add(row)
-        return best, rest
+    def clone(self, rows=None):
+        new = DATA()
+        for row in rows or []:
+            new.add(row)
+        return new
 
     def clone(self, rows=None, newData=None):
-        newData = DATA([self.cols.names])
+        newData = DATA(self.cols.names)
         for row in rows or []:
             newData.add(row)
         return newData

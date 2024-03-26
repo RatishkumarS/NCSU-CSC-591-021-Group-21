@@ -150,7 +150,10 @@ def bins():
     d = DATA("auto93.csv")
     best, rest, _ = d.branch()
     LIKE = best.rows
-    HATE = slice(random.sample(rest.rows, min(3 * len(LIKE), len(rest.rows))))
+    HATE = list(random.sample(rest.rows, min(3 * len(LIKE), len(rest.rows))))
+
+    # print(type(LIKE))
+    # print(type(HATE))
 
     def score(range_):
         return range_.score("LIKE", len(LIKE), len(HATE))
@@ -180,7 +183,7 @@ def bins():
     max_score = score(t[0])
     print("\n\nPART - 2")
     print("\n#scores:\n")
-    for v in t[: int(the["Beam"])]:
+    for v in t[: int(10)]:
         if score(v) > max_score * 0.1:
             temp_x = {"hi": v.x["hi"], "lo": v.x["lo"]}
             temp_y = {}
