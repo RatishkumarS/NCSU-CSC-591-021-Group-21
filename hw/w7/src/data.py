@@ -140,13 +140,8 @@ class DATA:
         ]
 
     def half(self, rows, sortp, before):
-
         the_half = min(len(rows) // 2, len(rows))
         some = random.sample(rows, the_half)
-
-        # for row in some:
-        #     print(row.cells)
-
         a, b, C, evals = self.farapart(some, sortp, before)
 
         def d(row1, row2):
@@ -179,17 +174,13 @@ class DATA:
         return out, selected
 
     def farapart(self, rows, sortp, a=None, b=None, far=None, evals=0):
-
         far = int(len(rows) * 0.95) + 1
-        # print(far)
         evals = 1 if a is not None else 2
 
         a = a or random.choice(rows)
-        # print(a.cells)
 
         sorted_neighbors = a.neighbors(self, rows)
         a = a or sorted_neighbors[0]
-        # print(min(far, len(sorted_neighbors) - 1))
         b = sorted_neighbors[min(far, len(sorted_neighbors) - 1)]
 
         if sortp and b.d2h(self) < a.d2h(self):
@@ -198,6 +189,8 @@ class DATA:
         return a, b, a.dist(b, self), evals
 
     def far(the, data_new):
+        print()
+        print("Task 2: Get Far Working\n")
         target_distance = 0.95
         current_distance = 0
         attempts = 0
@@ -241,7 +234,6 @@ class DATA:
 
     def branch(self, stop=None, rest=None, _branch=None, evals=None):
         evals, rest = 1, []
-
         stop = stop or (2 * (len(self.rows) ** 0.5))
 
         def _branch(data, above=None, left=None, lefts=None, rights=None):

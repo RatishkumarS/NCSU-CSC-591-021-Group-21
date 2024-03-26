@@ -1,6 +1,5 @@
 from helpers import o
 
-
 class NODE:
     def __init__(self, data):
         self.here = data
@@ -28,7 +27,7 @@ class NODE:
             nonlocal maxDepth
             post = "\t\t" + o(node.here.mid().cells) if leafp else ""
             maxDepth = max(maxDepth, depth)
-            print(("|.. " * depth) + post)
+            print(('|.. ' * depth) + post)
 
         self.walk(_show)
         print("")
