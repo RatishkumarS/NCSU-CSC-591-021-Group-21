@@ -1,32 +1,10 @@
 import sys, random
 
-def of(s):
-    try: return float(s)
-    except ValueError: return s
-
-def slurp(file):
-  nums,lst,last= [],[],None
-  with open(file) as fp: 
-    for word in [of(x) for s in fp.readlines() for x in s.split()]:
-      if isinstance(word,float):
-        lst += [word]
-      else:
-        if len(lst)>0: nums += [NUM(lst,last)]
-        lst,last =[],word
-  if len(lst)>0: nums += [NUM(lst,last)]
-  return nums
-
 class Num:
-  "stores mean, standard deviation, low, high, of a list of numbers"
   def __init__(self,lst=[],txt="",rank=0):
     self.has,self.check = [],False
     self.txt, self.rank = txt,0
     self.n, self.sd, self.m2,self.mu, self.lo, self.hi = 0,0,0,0, sys.maxsize, -sys.maxsize
-    # if self.n != 0: 
-    #   tmp, self.mu  = 0, sum(lst) / self.n
-    #   for x in lst: 
-    #     tmp += (x-self.mu)**2; self.hi=max(x,self.hi); self.lo=min(x,self.lo)
-      # self.sd = (tmp/(self.n - 1+1E-30))**.5 
     for t in lst:
       self.push(t)
   
@@ -62,7 +40,7 @@ class Num:
     out[width//2] = "|"
     out[nc] = "*"
     return ', '.join(["%2d" % num.rank, word % num.txt, fmt%c, fmt%(d-b),
-                      ''.join(out), fmt%self.lo,fmt%self.hi])#', '.join([(fmt % x) for x in [a,b,c,d,e]])])
+                      ''.join(out), fmt%self.lo,fmt%self.hi])
 
 def different(x,y):
   "non-parametric effect size and significance test"
@@ -85,28 +63,27 @@ def _bootstrap(y0,z0,confidence=.05,Experiments=512,):
   """non-parametric significance test From Introduction to Bootstrap, 
      Efron and Tibshirani, 1993, chapter 20. https://doi.org/10.1201/9780429246593"""
   obs = lambda x,y: abs(x.mu-y.mu) / ((x.sd**2/x.n + y.sd**2/y.n)**.5 + 1E-30)
-  x, y, z = NUM(y0+z0), NUM(y0), NUM(z0)
+  x, y, z = Num(y0+z0), Num(y0), Num(z0)
   d = obs(y,z)
   yhat = [y1 - y.mu + x.mu for y1 in y0]
   zhat = [z1 - z.mu + x.mu for z1 in z0]
   n      = 0
   for _ in range(Experiments):
-    ynum = NUM(random.choices(yhat,k=len(yhat)))
-    znum = NUM(random.choices(zhat,k=len(zhat)))
+    ynum = Num(random.choices(yhat,k=len(yhat)))
+    znum = Num(random.choices(zhat,k=len(zhat)))
     if obs(ynum, znum) > d:
       n += 1
-  return n / Experiments < confidence # true if different
+  return n / Experiments < confidence 
 
 
 def sk(nums):
-  "sort nums on median. give adjacent nums the same rank if they are statistically the same"
   def sk1(nums, rank,lvl=1):
     all = lambda lst:  [x for num in lst for x in num.has]
-    b4, cut = NUM(all(nums)) ,None
+    b4, cut = Num(all(nums)) ,None
     max =  -1
     for i in range(1,len(nums)):  
-      lhs = NUM(all(nums[:i])); 
-      rhs = NUM(all(nums[i:])); 
+      lhs = Num(all(nums[:i])); 
+      rhs = Num(all(nums[i:])); 
       tmp = (lhs.n*abs(lhs.mid() - b4.mid()) + rhs.n*abs(rhs.mid() - b4.mid()))/b4.n 
       if tmp > max:
          max,cut = tmp,i 
@@ -125,47 +102,25 @@ def egSlurp():
   eg0(slurp("stats.txt"))
 
 def eg0(nums):
-  total= NUM([x for num in nums for x in num.has])
+  total= Num([x for num in nums for x in num.has])
   final = None
   for num in sk(nums):
     if num.rank != final: print("#")
     final=num.rank
     print(total.bar(num,width=40,word="%20s", fmt="%5.2f"))
-    
-def eg1():
-  x=1
-  print("inc","\tcd","\tboot","\tc+b", "\tsd/3")
-  while x<1.5:
-    a1 = [random.gauss(10,3) for x in range(20)]
-    a2 = [y*x for y in a1]
-    n1=NUM(a1)
-    n2=NUM(a2)
-    n12=NUM(a1+a2)
-    t1=_cliffsDelta(a1,a2)
-    t2= _bootstrap(a1,a2)
-    t3= abs(n1.mu-n2.mu) > n12.sd/3
-    print(round(x,3),t1, t2,t1 and t2, t3, sep="\t")
-    x *= 1.02
-  
-def eg2(n=5):
-  eg0([NUM([0.34, 0.49 ,0.51, 0.6]*n,   "x1"),
-        NUM([0.6  ,0.7 , 0.8 , 0.89]*n,  "x2"),
-        NUM([0.13 ,0.23, 0.38 , 0.38]*n, "x3"),
-        NUM([0.6  ,0.7,  0.8 , 0.9]*n,   "x4"),
-        NUM([0.1  ,0.2,  0.3 , 0.4]*n,   "x5")])
-  
-def eg3():
-  eg0([NUM([0.32,  0.45,  0.50,  0.5,  0.55],"one"),
-        NUM([ 0.76,  0.90,  0.95,  0.99,  0.995],"two")])
 
-def eg4(n=5):
-  eg0([
-        NUM([0.34, 0.49 ,0.51, 0.6]*n,   "x1"),
-        NUM([0.35, 0.52 ,0.63, 0.8]*n,   "x2"),
-        NUM([0.13 ,0.23, 0.38 , 0.38]*n, "x4"),
-        ])
+def of(s):
+    try: return float(s)
+    except ValueError: return s
 
-if __name__ == "__main__":
-  random.seed(1)
-  eg3()
-  #[print("\n",f()) for f in [eg1,eg2,eg3,eg4]]
+def slurp(file):
+  nums,lst,last= [],[],None
+  with open(file) as fp: 
+    for word in [of(x) for s in fp.readlines() for x in s.split()]:
+      if isinstance(word,float):
+        lst += [word]
+      else:
+        if len(lst)>0: nums += [NUM(lst,last)]
+        lst,last =[],word
+  if len(lst)>0: nums += [NUM(lst,last)]
+  return nums

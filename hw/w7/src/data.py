@@ -1,3 +1,4 @@
+import math
 from row import ROW
 from num import NUM
 from sym import SYM
@@ -5,6 +6,7 @@ from cols import COLS
 from node import NODE
 import random, sys, re
 import numpy as np
+
 
 
 class DATA:
@@ -53,6 +55,14 @@ class DATA:
             self.rows.append(row)
         else:
             self.cols = COLS(row)
+    def rnd(n, ndecs=None):
+        if not isinstance(n, (int, float)):
+            return n
+        if math.floor(n) == n:
+            return n
+        mult = 10 ** (ndecs or 2)
+        return math.floor(n * mult + 0.5) / mult
+
 
     def mid(self, cols=None):
         u = [round(col.mid(), 2) for col in (cols or self.cols.all)]
@@ -75,50 +85,26 @@ class DATA:
                 statistics[f"{col.txt}"] = int(mode) if type(mode) == float else mode
         return statistics
 
-    list_1, list_2, list_3, list_4, list_5, list_6 = [[] for _ in range(6)]
 
-    def gate(self, random_seed, budget0, budget, some):
-        random.seed(random_seed)
-        rows = random.sample(self.rows, len(self.rows))
-        DATA.list_1.append(f"1. top6: {[r.cells[len(r.cells)-3:] for r in rows[:6]]}")
-
-        DATA.list_2.append(
-            f"2. top50:{[[r.cells[len(r.cells)-3:] for r in rows[:50]]]}"
-        )
-
-        rows.sort(key=lambda row: row.d2h(self))
-        DATA.list_3.append(f"3. most: {rows[0].cells[len(rows[0].cells)-3:]}")
-
-        random.shuffle(rows)
-        lite = rows[:budget0]
-        dark = rows[budget0:]
-
+   
+    def gate(self, budget0, budget, some):
         stats = []
         bests = []
+        rows = random.sample(self.rows, len(self.rows)) 
+    
+        lite = rows[0:budget0]  
+        dark = rows[budget0:]     
 
         for i in range(budget):
-            best, rest = self.best_rest(lite, (len(lite) ** some))
-            todo, selected = self.split(best, rest, lite, dark)
-            selected_rows_rand = random.sample(dark, budget0 + i)
-            y_values_sum = [0.0, 0.0, 0.0]
-            for row in selected_rows_rand:
-                y_val = list(map(self.coerce, row.cells[-3:]))
-                y_values_sum = [sum(x) for x in zip(y_values_sum, y_val)]
-            num_rows = len(selected_rows_rand)
-            y_values_centroid = [round(val / num_rows, 2) for val in y_values_sum]
-
-            DATA.list_4.append(f"4: rand:{y_values_centroid}")
-            DATA.list_5.append(
-                f"5. mid: {selected.mid().cells[len(selected.mid().cells)-3:]}"
-            )
-            DATA.list_6.append(
-                f"6. top: {best.rows[0].cells[len(best.rows[0].cells)-3:]}"
-            )
-
+            best, rest = self.best_rest(lite, len(lite)**some)  
+            todo, selected = self.split(best, rest, lite, dark)  
+            
             stats.append(selected.mid())
             bests.append(best.rows[0])
-            lite.append(dark.pop(todo))
-        return stats, bests, [bests[-1].cells, round(bests[-1].d2h(self), 2)]
+
+        return stats, bests
+
+
 
     def stats_div(self, fun=None, ndivs=None):
         u = {}
@@ -278,3 +264,4 @@ class DATA:
         rows = random.sample(self.rows, len(self.rows))
         rows.sort(key=lambda row: row.d2h(self))
         return [rows[0].cells, round(rows[0].d2h(self), 2)]
+    

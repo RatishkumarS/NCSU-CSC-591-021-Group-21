@@ -1,4 +1,5 @@
-from Stats import Num
+import math
+from Stat import Num
 import random
 import sys
 from config import CONFIG
@@ -8,6 +9,7 @@ from learn import *
 import constants, re, time
 from datetime import datetime
 from statistics import mean ,stdev
+import Stat
 
 
 def dist():
@@ -75,7 +77,7 @@ def smo_stats():
         bonr9.append(bonr_col(9))
         rand9.append(rand_col(9))
         bonr15.append(bonr_col(15))
-        rand15.append(rand_col(20))
+        rand15.append(rand_col(15))
         bonr20.append(bonr_col(20))
         rand20.append(rand_col(20))
         rand358.append(rand_col(358))
@@ -84,20 +86,20 @@ def smo_stats():
     tiny=rnd(0.35*stddev)
     print("best:{} \ntiny:{}".format(ceil,tiny))
     print("base bonr9 rand9 bonr15 rand15 bonr20 rand20 rand358")
-    print("Report8")
-    Num.eg0([
-        Num(bonr9,"bonr9"),
-        Num(rand9,"rand9"),
-        Num(bonr15,"bonr15"),
-        Num(rand15,"rand15"),
-        Num(bonr20,"bonr20"),
-        Num(rand20,"rand20"),
-        Num(rand358,"rand358"),
-        Num(all_std,"base")
+    print("#Report")
+    Stat.eg0([
+    Num(bonr9,"bonr9"),
+    Num(rand9,"rand9"),
+    Num(bonr15,"bonr15"),
+    Num(rand15,"rand15"),
+    Num(bonr20,"bonr20"),
+    Num(rand20,"rand20"),
+    Num(rand358,"rand358"),
+    Num(all_std,"base")
     ])
 def bonr_col(n):
     data=DATA("auto93.csv")
-    stats,bests,x=data.gate(32400,4,n-4,0.5)
+    stats,bests=data.gate(4,n-4,0.5)
     stat,best=stats[-1],bests[-1]
     return rnd(best.d2h(data))
 def rand_col(n):
@@ -110,6 +112,15 @@ def all_std_rows(rowss,data):
     for rows in rowss:
         all_d2h.append(rows.d2h(data))
     return all_d2h
+
+def rnd(n, ndecs=None):
+    if not isinstance(n, (int, float)):
+        return n
+    if math.floor(n) == n:
+        return n
+    mult = 10 ** (ndecs or 2)
+    return math.floor(n * mult + 0.5) / mult
+
 
 def cli():
     args = sys.argv[1:]

@@ -19,7 +19,7 @@ class NODE:
 
     def show(self, maxDepth=0):
         def d2h(data):
-            return round(data.mid().d2h(self.here))
+            return round(data.mid().d2h(self.here), 2)
 
         maxDepth = 0
 
